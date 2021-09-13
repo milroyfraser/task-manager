@@ -35,8 +35,14 @@ class TaskManager(
         killGroup(processes)
     }
 
-    fun list(): List<Process> {
-        return processes
+    fun list(field: SortField = SortField.CREATED_AT): List<Process> {
+        if (field == SortField.CREATED_AT) {
+            return processes.sortedBy { it.createdAt }
+        } else if (field == SortField.PRIORITY) {
+            return processes.sortedBy { it.priority.value }
+        }
+
+        return processes.sortedBy { it.pid }
     }
 
     private fun canAcceptNewProcess(): Boolean {

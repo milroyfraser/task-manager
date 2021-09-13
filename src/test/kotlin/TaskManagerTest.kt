@@ -102,4 +102,40 @@ internal class TaskManagerTest {
             on { getProcessToKill(processors, newProcess) } doReturn returnValue
         }
     }
+
+    @Test
+    fun `can list processors by default ordered by time of creation`() {
+        val firstProcess = Process(Priority.LOW)
+        val secondProcess = Process(Priority.LOW)
+        val thirdProcess = Process(Priority.LOW)
+        val processManager = mock<ProcessManager>()
+        val taskManager: TaskManager = TaskManager(processManager, 5)
+        taskManager.add(firstProcess)
+        taskManager.add(secondProcess)
+        taskManager.add(thirdProcess)
+
+        val listOfProcessors = taskManager.list()
+
+        assertEquals(firstProcess, listOfProcessors.first())
+        assertEquals(thirdProcess, listOfProcessors.last())
+        assertEquals(3, listOfProcessors.count())
+    }
+
+    @Test
+    fun `can list processors sorted by priority`() {
+        val firstProcess = Process(Priority.MEDIUM)
+        val secondProcess = Process(Priority.LOW)
+        val thirdProcess = Process(Priority.HIGH)
+        val processManager = mock<ProcessManager>()
+        val taskManager: TaskManager = TaskManager(processManager, 5)
+        taskManager.add(firstProcess)
+        taskManager.add(secondProcess)
+        taskManager.add(thirdProcess)
+
+        val listOfProcessors = taskManager.list(SortField.PRIORITY)
+
+        assertEquals(secondProcess, listOfProcessors.first())
+        assertEquals(thirdProcess, listOfProcessors.last())
+        assertEquals(3, listOfProcessors.count())
+    }
 }
